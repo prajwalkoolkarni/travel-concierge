@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workflow — Travel Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+:root {
+  --bg: #080C14;
+  --surface: #0F1523;
+  --surface2: #182035;
+  --border: #233050;
+  --accent: #2FD8B5;
+  --accent-dim: rgba(47,216,181,0.08);
+  --gold: #F0B93A;
+  --text: #E4EEFF;
+  --text-muted: #6A84A8;
+  --text-subtle: #36496A;
+  --ff-display: 'Fraunces', Georgia, serif;
+  --ff-body: 'DM Sans', system-ui, sans-serif;
+  --max-w: 1080px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* NAV */
+nav {
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(8,12,20,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--ff-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a.active { color: var(--text); }
+.nav-cta {
+  border: 1px solid var(--accent) !important;
+  color: var(--accent) !important;
+  padding: 6px 16px;
+  border-radius: 3px;
+  font-size: 0.8125rem !important;
+  transition: background 0.15s !important;
+}
+.nav-cta:hover { background: var(--accent-dim) !important; }
+
+/* PAGE HEADER */
+.page-header {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+}
+.page-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.page-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.page-header h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  max-width: 640px;
+  text-wrap: balance;
+  margin-bottom: 20px;
+}
+.page-header p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 520px;
+  font-weight: 300;
+  line-height: 1.7;
+}
+
+/* PIPELINE SECTION */
+.section {
+  border-top: 1px solid var(--border);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 56px 24px;
+}
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 40px;
+}
+
+/* PIPELINE DIAGRAM */
+.pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pipeline-phase {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0;
+  position: relative;
+}
+.pipeline-spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+.phase-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 22px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.pipeline-phase:first-child .phase-dot { background: var(--accent); border-color: var(--accent); }
+.phase-line {
+  width: 1px;
+  flex: 1;
+  background: var(--border);
+  min-height: 24px;
+}
+.pipeline-phase:last-child .phase-line { display: none; }
+.phase-body {
+  padding: 16px 0 40px 24px;
+}
+.phase-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.phase-index {
+  font-family: var(--ff-display);
+  font-size: 0.6875rem;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.phase-tag {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(47,216,181,0.2);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+.phase-tag.gold {
+  color: var(--gold);
+  background: rgba(240,185,58,0.08);
+  border-color: rgba(240,185,58,0.2);
+}
+.phase-title {
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.phase-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.7;
+  max-width: 640px;
+  margin-bottom: 16px;
+}
+.phase-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detail-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.8125rem;
+}
+.detail-key {
+  color: var(--text-subtle);
+  font-weight: 400;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+.detail-val {
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* AGENT SECTION */
+.agent-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.agent-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.agent-step:first-child { border-radius: 3px 3px 0 0; }
+.agent-step:last-child { border-radius: 0 0 3px 3px; }
+.step-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  flex-shrink: 0;
+  color: var(--text-subtle);
+  background: var(--surface2);
+  font-variant-numeric: tabular-nums;
+}
+.step-icon.active { background: var(--accent-dim); color: var(--accent); }
+.step-icon.tool { background: rgba(240,185,58,0.08); color: var(--gold); }
+.step-content h4 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.step-content p {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.6;
+}
+.connector {
+  width: 1px;
+  height: 12px;
+  background: var(--border);
+  margin-left: 33px;
+}
+
+/* ARCHITECTURE DIAGRAM (ASCII-style) */
+.arch-diagram {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 32px;
+  overflow-x: auto;
+}
+.arch-diagram pre {
+  font-family: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  white-space: pre;
+  min-width: 520px;
+}
+.arch-diagram pre .hi { color: var(--accent); }
+.arch-diagram pre .gold { color: var(--gold); }
+.arch-diagram pre .dim { color: var(--text-subtle); }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 28px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--text-subtle);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+footer a { color: var(--text-muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+@media (max-width: 680px) {
+  .page-header { padding: 48px 20px 40px; }
+  .section { padding: 40px 20px; }
+  .nav-links { gap: 20px; }
+  .detail-key { min-width: 96px; }
+  .arch-diagram { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Travel<span>.</span>Concierge</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/stack.html">Stack</a>
+      <a href="/workflow.html" class="active">Workflow</a>
+      <a href="/chat.html" class="nav-cta">Try It</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="page-header">
+    <div class="page-eyebrow">Architecture</div>
+    <h1>Five phases, end to end</h1>
+    <p>From a raw CSV file to a live AI agent — each phase transforms the data and hands it to the next. Here is what happens at every step.</p>
+  </div>
+
+  <!-- PIPELINE PHASES -->
+  <section class="section">
+    <div class="section-label">Data pipeline</div>
+    <div class="pipeline">
+
+      <div class="pipeline-phase">
+        <div class="pipeline-spine">
+          <div class="phase-dot"></div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-meta">
+            <span class="phase-index">01</span>
+            <span class="phase-tag">Databricks</span>
+          </div>
+          <div class="phase-title">Data ingestion &amp; transformation</div>
+          <p class="phase-desc">The raw Inside Airbnb CSV (35,036 Sydney listings) is ingested into a Databricks workspace. PySpark jobs clean the data across three quality tiers: raw → silver → gold. Unity Catalog governs each table with schema enforcement and column-level lineage.</p>
+          <div class="phase-detail">
+            <div class="detail-row"><span class="detail-key">Input</span><span class="detail-val">listings.csv (raw, 35,036 rows)</span></div>
+            <div class="detail-row"><span class="detail-key">Transform</span><span class="detail-val">Null handling, text normalisation, price parsing, duplicate removal</span></div>
+            <div class="detail-row"><span class="detail-key">Output</span><span class="detail-val">Gold-tier Delta table in Unity Catalog</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-phase">
+        <div class="pipeline-spine">
+          <div class="phase-dot"></div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-meta">
+            <span class="phase-index">02</span>
+            <span class="phase-tag">pgvector</span>
+          </div>
+          <div class="phase-title">Embedding &amp; vector indexing</div>
+          <p class="phase-desc">Each listing's description is encoded into a 384-dimensional dense vector using BAAI/bge-small-en-v1.5. Vectors are stored in Supabase (PostgreSQL + pgvector). An HNSW index is built over the embedding column, enabling approximate nearest-neighbour search in under 100ms.</p>
+          <div class="phase-detail">
+            <div class="detail-row"><span class="detail-key">Model</span><span class="detail-val">BAAI/bge-small-en-v1.5 (33M params, local inference)</span></div>
+            <div class="detail-row"><span class="detail-key">Dimensions</span><span class="detail-val">384, L2-normalised for cosine similarity</span></div>
+            <div class="detail-row"><span class="detail-key">Index</span><span class="detail-val">HNSW (m=16, ef_construction=64)</span></div>
+            <div class="detail-row"><span class="detail-key">Storage</span><span class="detail-val">Supabase: listings_embeddings + listings_structured tables</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-phase">
+        <div class="pipeline-spine">
+          <div class="phase-dot"></div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-meta">
+            <span class="phase-index">03</span>
+            <span class="phase-tag">LangGraph</span>
+          </div>
+          <div class="phase-title">AI agent layer</div>
+          <p class="phase-desc">A LangGraph ReAct agent orchestrates the entire query-to-answer loop. It reasons about which tools to call, inspects results, and iterates until it has enough information to synthesise a recommendation. The LLM is DeepSeek-Chat, accessed via OpenAI-compatible API.</p>
+          <div class="phase-detail">
+            <div class="detail-row"><span class="detail-key">Tool 1</span><span class="detail-val">search_listings — semantic vector search, returns top-k matches</span></div>
+            <div class="detail-row"><span class="detail-key">Tool 2</span><span class="detail-val">get_listing_details — structured fetch (price, amenities, reviews)</span></div>
+            <div class="detail-row"><span class="detail-key">Loop</span><span class="detail-val">Thought → Tool call → Observation → repeat until final answer</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-phase">
+        <div class="pipeline-spine">
+          <div class="phase-dot"></div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-meta">
+            <span class="phase-index">04</span>
+            <span class="phase-tag gold">LangSmith</span>
+          </div>
+          <div class="phase-title">Guardrails &amp; observability</div>
+          <p class="phase-desc">A custom validation layer wraps every request and response. Inputs are screened for toxicity, off-topic queries, and competitor mentions before reaching the agent. Outputs are screened again before being returned. Every agent run produces a full LangSmith trace: latency, token counts, and a waterfall of tool calls.</p>
+          <div class="phase-detail">
+            <div class="detail-row"><span class="detail-key">Input checks</span><span class="detail-val">Toxicity, non-travel queries, competitor brand mentions</span></div>
+            <div class="detail-row"><span class="detail-key">Output checks</span><span class="detail-val">Competitor mentions, policy violations</span></div>
+            <div class="detail-row"><span class="detail-key">Observability</span><span class="detail-val">LangSmith project: travel-concierge (full waterfall traces)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-phase">
+        <div class="pipeline-spine">
+          <div class="phase-dot"></div>
+          <div class="phase-line"></div>
+        </div>
+        <div class="phase-body">
+          <div class="phase-meta">
+            <span class="phase-index">05</span>
+            <span class="phase-tag gold">Azure</span>
+          </div>
+          <div class="phase-title">Containerisation &amp; deployment</div>
+          <p class="phase-desc">The FastAPI app (API + frontend + model) is packaged into a Docker image. On every push to main, GitHub Actions builds and pushes the image to Azure Container Registry, then deploys a new revision to Azure Container Apps — achieving zero-downtime updates with a public HTTPS endpoint.</p>
+          <div class="phase-detail">
+            <div class="detail-row"><span class="detail-key">Container</span><span class="detail-val">Docker multi-stage build, Python 3.11-slim base</span></div>
+            <div class="detail-row"><span class="detail-key">Registry</span><span class="detail-val">Azure Container Registry</span></div>
+            <div class="detail-row"><span class="detail-key">Hosting</span><span class="detail-val">Azure Container Apps (serverless, scale-to-zero)</span></div>
+            <div class="detail-row"><span class="detail-key">CI/CD</span><span class="detail-val">GitHub Actions deploy.yml — build → push → deploy on merge to main</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- AGENT LOOP -->
+  <section class="section">
+    <div class="section-label">Inside the agent loop</div>
+    <p style="font-size:0.9rem;color:var(--text-muted);font-weight:300;max-width:560px;margin-bottom:32px;line-height:1.7;">
+      When a user sends a query, the ReAct agent follows this cycle. A single query typically completes in 7–10 seconds.
+    </p>
+
+    <div class="agent-flow">
+      <div class="agent-step">
+        <div class="step-icon active">→</div>
+        <div class="step-content">
+          <h4>User query arrives at /chat</h4>
+          <p>FastAPI receives the POST request. The guardrails layer validates the input — if blocked, a safe message is returned immediately.</p>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="agent-step">
+        <div class="step-icon">🤔</div>
+        <div class="step-content">
+          <h4>Agent reasons about tools</h4>
+          <p>DeepSeek-Chat reads the user message and the system prompt, then decides which tool to call first and with what arguments.</p>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="agent-step">
+        <div class="step-icon tool">⌕</div>
+        <div class="step-content">
+          <h4>search_listings called</h4>
+          <p>The query is encoded into a 384-d vector. Supabase executes an HNSW nearest-neighbour search and returns the top-k most semantically similar listings.</p>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="agent-step">
+        <div class="step-icon tool">≡</div>
+        <div class="step-content">
+          <h4>get_listing_details called (1–3×)</h4>
+          <p>For each promising match, the agent fetches structured data — price per night, amenities, superhost status, review score — from the listings_structured table.</p>
+        </div>
+      </div>
+      <div class="connector"></div>
+      <div class="agent-step">
+        <div class="step-icon">✓</div>
+        <div class="step-content">
+          <h4>Final answer generated</h4>
+          <p>The agent synthesises all observations into a recommendation. The output guardrail runs, then the response is returned to the user.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM DIAGRAM -->
+  <section class="section">
+    <div class="section-label">System overview</div>
+    <div class="arch-diagram">
+      <pre>
+<span class="dim">  User</span>                <span class="dim">API Server</span>                      <span class="dim">Data</span>
+<span class="dim">  ─────</span>               <span class="dim">──────────</span>                      <span class="dim">────</span>
+
+  <span class="dim">[ Browser ]</span>
+       │
+       │  POST /chat
+       ▼
+  <span class="hi">[ FastAPI ]</span>
+       │
+       │  input check
+       ▼
+  <span class="gold">[ Guardrails ]</span>──── blocked ──────────────────────────────▶ return safe message
+       │
+       │  clean input
+       ▼
+  <span class="hi">[ LangGraph ]</span> ──────────────── LangSmith trace ──▶ <span class="gold">[ smith.langchain.com ]</span>
+       │
+       ├── Thought: which tool?
+       │
+       ├──▶ <span class="hi">[ search_listings ]</span>
+       │           │
+       │           │  encode query
+       │           ▼
+       │    <span class="hi">[ bge-small ]</span> → 384-d vector
+       │           │
+       │           │  similarity search
+       │           ▼
+       │    <span class="gold">[ Supabase pgvector ]</span> ──▶ top-k listing IDs + scores
+       │
+       ├──▶ <span class="hi">[ get_listing_details ]</span>  (called 1–3 times)
+       │           │
+       │           ▼
+       │    <span class="gold">[ Supabase REST ]</span> ──▶ price, amenities, reviews
+       │
+       └── Synthesise answer
+                │
+                ▼
+         <span class="gold">[ Guardrails ]</span> output check
+                │
+                ▼
+         <span class="hi">[ Response to user ]</span>
+</pre>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Built by Prajwal Kulkarni — AI Engineer, Brisbane</span>
+  <div style="display:flex;gap:20px;">
+    <a href="/stack.html">Tech Stack</a>
+    <a href="/workflow.html">Architecture</a>
+    <a href="/chat.html">Live Demo</a>
+  </div>
+</footer>
+
+</body>
+</html>

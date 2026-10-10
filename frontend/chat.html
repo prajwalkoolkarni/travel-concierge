@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Try It — Travel Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500&display=swap">
+<style>
+:root {
+  --bg: #080C14;
+  --surface: #0F1523;
+  --surface2: #182035;
+  --border: #233050;
+  --accent: #2FD8B5;
+  --accent-dim: rgba(47,216,181,0.08);
+  --gold: #F0B93A;
+  --text: #E4EEFF;
+  --text-muted: #6A84A8;
+  --text-subtle: #36496A;
+  --ff-display: 'Fraunces', Georgia, serif;
+  --ff-body: 'DM Sans', system-ui, sans-serif;
+  --max-w: 1080px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NAV */
+nav {
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(8,12,20,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+  flex-shrink: 0;
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--ff-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 400;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: var(--text); }
+.nav-links a.active { color: var(--text); }
+.nav-cta {
+  border: 1px solid var(--accent) !important;
+  color: var(--accent) !important;
+  padding: 6px 16px;
+  border-radius: 3px;
+  font-size: 0.8125rem !important;
+  transition: background 0.15s !important;
+}
+.nav-cta:hover { background: var(--accent-dim) !important; }
+.nav-links a.active.nav-cta {
+  background: var(--accent-dim);
+}
+
+/* CHAT LAYOUT */
+.chat-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 40px 24px 0;
+  width: 100%;
+}
+.chat-header {
+  margin-bottom: 32px;
+}
+.chat-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chat-eyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--accent);
+}
+.chat-header h1 {
+  font-family: var(--ff-display);
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.chat-header p {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* MESSAGE THREAD */
+#thread {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 24px;
+  min-height: 0;
+}
+
+/* SUGGESTION PILLS (shown before first message) */
+#suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.suggestion-label {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.suggestions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.suggestion-pill {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.4;
+  transition: border-color 0.15s, color 0.15s;
+}
+.suggestion-pill:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* MESSAGES */
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.msg-role {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-subtle);
+}
+.msg-user .msg-role { color: var(--accent); }
+.msg-bubble {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+.msg-user .msg-bubble { color: var(--text); }
+.msg-agent .msg-bubble { color: var(--text-muted); }
+
+/* Markdown rendering inside agent bubbles */
+.msg-bubble strong { color: var(--text); font-weight: 500; }
+.msg-bubble em { font-style: italic; }
+.msg-bubble p { margin-bottom: 10px; }
+.msg-bubble p:last-child { margin-bottom: 0; }
+.msg-bubble ul, .msg-bubble ol { padding-left: 20px; margin-bottom: 10px; }
+.msg-bubble li { margin-bottom: 4px; }
+.msg-bubble code {
+  font-family: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
+  font-size: 0.8125rem;
+  background: var(--surface2);
+  padding: 1px 6px;
+  border-radius: 2px;
+  color: var(--accent);
+}
+
+/* BLOCKED MESSAGE */
+.msg-blocked .msg-bubble {
+  color: var(--gold);
+}
+.blocked-tag {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--gold);
+  background: rgba(240,185,58,0.08);
+  border: 1px solid rgba(240,185,58,0.2);
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+
+/* LOADING STATE */
+.msg-loading .msg-bubble {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-subtle);
+  font-size: 0.875rem;
+}
+.dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-subtle);
+  animation: blink 1.2s infinite;
+}
+.dots span:nth-child(2) { animation-delay: 0.2s; }
+.dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.3; }
+  40% { opacity: 1; }
+}
+
+/* ERROR STATE */
+.msg-error .msg-bubble { color: #F87171; }
+
+/* INPUT AREA */
+.input-area {
+  border-top: 1px solid var(--border);
+  padding: 20px 0 28px;
+  flex-shrink: 0;
+}
+.input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+#query-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: 0.9375rem;
+  font-weight: 300;
+  padding: 12px 16px;
+  resize: none;
+  min-height: 48px;
+  max-height: 140px;
+  outline: none;
+  line-height: 1.5;
+  transition: border-color 0.15s;
+  overflow-y: auto;
+}
+#query-input::placeholder { color: var(--text-subtle); }
+#query-input:focus { border-color: var(--accent); }
+#send-btn {
+  background: var(--accent);
+  color: #080C14;
+  border: none;
+  border-radius: 3px;
+  padding: 12px 20px;
+  font-family: var(--ff-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  height: 48px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+#send-btn:hover { opacity: 0.88; }
+#send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.input-hint {
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+}
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8125rem;
+  color: var(--text-subtle);
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
+}
+footer a { color: var(--text-muted); text-decoration: none; }
+footer a:hover { color: var(--text); }
+
+@media (max-width: 680px) {
+  .chat-wrapper { padding: 28px 16px 0; }
+  .nav-links { gap: 20px; }
+  .suggestions-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">Travel<span>.</span>Concierge</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/stack.html">Stack</a>
+      <a href="/workflow.html">Workflow</a>
+      <a href="/chat.html" class="nav-cta active">Try It</a>
+    </div>
+  </div>
+</nav>
+
+<div class="chat-wrapper">
+  <div class="chat-header">
+    <div class="chat-eyebrow">Live Demo</div>
+    <h1>Ask about a place to stay</h1>
+    <p>Powered by semantic vector search over 35,036 Sydney Airbnb listings. Describe what you want in plain English.</p>
+  </div>
+
+  <div id="thread">
+    <div id="suggestions">
+      <div class="suggestion-label">Try asking</div>
+      <div class="suggestions-grid">
+        <button class="suggestion-pill" onclick="useSuggestion(this)">A quiet place near the beach, good for solo travellers</button>
+        <button class="suggestion-pill" onclick="useSuggestion(this)">Something cozy in the city with fast WiFi for remote work</button>
+        <button class="suggestion-pill" onclick="useSuggestion(this)">A large house for a group of 8, with a backyard</button>
+        <button class="suggestion-pill" onclick="useSuggestion(this)">Boutique apartment with harbour views, under $200/night</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-row">
+      <textarea id="query-input" placeholder="Describe what you're looking for…" rows="1"></textarea>
+      <button id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+    <div class="input-hint">Press Enter to send, Shift+Enter for a new line. Queries take 7–10 seconds.</div>
+  </div>
+</div>
+
+<footer>
+  <span>Built by Prajwal Kulkarni — AI Engineer, Brisbane</span>
+  <div style="display:flex;gap:20px;">
+    <a href="/stack.html">Tech Stack</a>
+    <a href="/workflow.html">Architecture</a>
+  </div>
+</footer>
+
+<script>
+// ── Markdown renderer (no library needed) ────────────────────────────────────
+function renderMarkdown(text) {
+  return text
+    // Bold: **text**
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    // Italic: *text*
+    .replace(/(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, '<em>$1</em>')
+    // Code: `text`
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    // Unordered list items: lines starting with - or *
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+    // Wrap consecutive <li> in <ul>
+    .replace(/(<li>.*<\/li>\n?)+/gs, m => '<ul>' + m + '</ul>')
+    // Paragraphs: double newline
+    .split(/\n{2,}/)
+    .map(block => {
+      if (block.startsWith('<ul>') || block.startsWith('<ol>')) return block;
+      return '<p>' + block.replace(/\n/g, ' ') + '</p>';
+    })
+    .join('\n');
+}
+
+// ── DOM helpers ───────────────────────────────────────────────────────────────
+const thread = document.getElementById('thread');
+const input  = document.getElementById('query-input');
+const btn    = document.getElementById('send-btn');
+let   busy   = false;
+
+function appendMsg(role, html, extra = '') {
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + role + (extra ? ' ' + extra : '');
+  div.innerHTML = `
+    <div class="msg-role">${role === 'user' ? 'You' : role === 'agent' ? 'Concierge' : role}</div>
+    <div class="msg-bubble">${html}</div>`;
+  thread.appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  return div;
+}
+
+function hideSuggestions() {
+  const s = document.getElementById('suggestions');
+  if (s) s.remove();
+}
+
+// ── Send logic ────────────────────────────────────────────────────────────────
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text || busy) return;
+
+  hideSuggestions();
+  busy = true;
+  btn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  // User message
+  appendMsg('user', escapeHtml(text));
+
+  // Loading indicator
+  const loadingDiv = appendMsg('agent', `
+    <div class="dots"><span></span><span></span><span></span></div>
+    <span>Searching listings…</span>
+  `, 'msg-loading');
+
+  try {
+    const res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+
+    if (!res.ok) {
+      throw new Error('Server error ' + res.status);
+    }
+
+    const data = await res.json();
+    loadingDiv.remove();
+
+    if (data.blocked) {
+      const div = appendMsg('agent', `
+        <div class="blocked-tag">Blocked</div>
+        <div>${escapeHtml(data.response)}</div>
+      `, 'msg-blocked');
+    } else {
+      appendMsg('agent', renderMarkdown(data.response));
+    }
+  } catch (err) {
+    loadingDiv.remove();
+    appendMsg('agent', escapeHtml('Sorry, something went wrong: ' + err.message), 'msg-error');
+  }
+
+  busy = false;
+  btn.disabled = false;
+  input.focus();
+}
+
+function useSuggestion(el) {
+  input.value = el.textContent.trim();
+  autoResize();
+  sendMessage();
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Auto-resize textarea ──────────────────────────────────────────────────────
+function autoResize() {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 140) + 'px';
+}
+input.addEventListener('input', autoResize);
+
+// ── Enter to send ─────────────────────────────────────────────────────────────
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+</script>
+
+</body>
+</html>
