@@ -1,0 +1,62 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  REGISTRY: travelconciergeacr.azurecr.io
+  IMAGE_NAME: travel-concierge
+  RESOURCE_GROUP: travel-concierge-rg
+  CONTAINER_APP_NAME: travel-concierge-app
+  CONTAINER_APP_ENV: travel-concierge-env
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+      - name: Deploy to Container Apps
+        run: |
+          az containerapp create \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --environment ${{ env.CONTAINER_APP_ENV }} \
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --registry-server ${{ env.REGISTRY }} \
+            --registry-username ${{ secrets.REGISTRY_USERNAME }} \
+            --registry-password ${{ secrets.REGISTRY_PASSWORD }} \
+            --target-port 8080 \
+            --ingress external \
+            --min-replicas 0 \
+            --max-replicas 1 \
+            --env-vars \
+              DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }} \
+              LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }} \
+              LANGSMITH_ENDPOINT=${{ secrets.LANGSMITH_ENDPOINT }} \
+              LANGSMITH_TRACING=true \
+              LANGSMITH_PROJECT=travel-concierge \
+          || az containerapp update \
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
